@@ -7,7 +7,7 @@ var path = require('path')
 var spawn = require('child_process').spawn
 
 // Environmental variables
-var interval = 1000 * (parseInt(process.env.SNAPSHOT_INTERVAL, 10) || 5)
+var interval = 1000 * (parseFloat(process.env.SNAPSHOT_INTERVAL) || 5)
 var port = parseInt(process.env.PORT, 10) || null
 
 // Image snapshot stream
@@ -21,25 +21,35 @@ setInterval(snapshot, interval)
 snapshot()
 
 function snapshot() {
-  var proc = spawn('imagesnap', ['-'])
+  var snapshot = spawn('imagesnap', ['-'])
+  var convert = spawn('convert', ['-', '-quality', '50', 'JPEG:-'])
 
-  proc.on('error', function (err) {
-    snapshots.emit('error', err)
-  })
+  snapshot.on('error', onError)
+  convert.on('error', onError)
+
+  snapshot.stdout.pipe(convert.stdin)
 
   var buffers = []
 
-  proc.stdout.on('data', function (chunk) {
-    buffers.push(chunk)
-  })
+  convert.stdout.on('data', onData)
+  convert.stdout.once('end', onEnd)
 
-  proc.stdout.once('end', function () {
+  function onData(chunk) {
+    buffers.push(chunk)
+  }
+
+  function onEnd() {
     snapshots.write('id: ' + Date.now() + '\n')
     snapshots.write('event: image\n')
     snapshots.write('data: ' + Buffer.concat(buffers).toString('base64') + '\n\n')
 
+    convert.stdout.removeListener('data', onData)
     buffers = null
-  })
+  }
+
+  function onError(err) {
+    snapshots.emit('error', err)
+  }
 }
 
 // Create the app
