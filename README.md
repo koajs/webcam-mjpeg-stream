@@ -1,13 +1,16 @@
 # Webcam MJPEG Stream
 
 A sample [koa](https://github.com/koajs/koa) app that streams snapshots from your Mac to the browser via server-side events.
-Use case: you have a baby and a Mac (because you have disposable income), and you want to watch him/her from your phone.
+
+Use case: you have a baby and a Mac dedicated to him/her (because you have disposable income and think the Raspberry Pi is for plebians), and you want to watch him/her from your phone.
 
 ## Setup
 
 You need node v0.11.4+ for generator support.
 
 ```bash
+# Install imagesnap
+brew install imagesnap
 # Use node 0.11.x
 nvm use 0.11
 # Install deps
