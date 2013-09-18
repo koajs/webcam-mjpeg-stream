@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title></title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+      img {
+        max-width: 100%;
+        max-height: 100%;
+        width: auto;
+        height: auto;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <img alt="" src="">
+    <script>
+      var img = document.querySelector('img');
+      var source = new EventSource('/stream');
+      source.addEventListener('image', function (e) {
+        img.src = 'data:image/jpeg;base64,' + e.data;
+      });
+    </script>
+  </body>
+</html>
