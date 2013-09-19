@@ -12,6 +12,7 @@ var port = parseInt(process.env.PORT, 10) || null
 
 // Image snapshot stream
 var snapshots = new Stream.PassThrough()
+var lastSnapshot
 
 snapshots.on('error', function (err) {
   throw err
@@ -39,9 +40,11 @@ function snapshot() {
   }
 
   function onEnd() {
+    lastSnapshot = Buffer.concat(buffers).toString('base64')
+
     snapshots.write('id: ' + Date.now() + '\n')
     snapshots.write('event: image\n')
-    snapshots.write('data: ' + Buffer.concat(buffers).toString('base64') + '\n\n')
+    snapshots.write('data: ' + lastSnapshot + '\n\n')
 
     convert.stdout.removeListener('data', onData)
     buffers = null
@@ -54,7 +57,7 @@ function snapshot() {
 
 // Create the app
 var app = koa()
-var template = fs.readFileSync(path.join(__dirname, 'index.html'))
+var template = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8')
 
 app.use(require('koa-compress')({
   flush: require('zlib').Z_SYNC_FLUSH
@@ -84,8 +87,10 @@ app.use(function (next) {
     if (this.path !== '/')
       return yield next
 
-    this.type = 'html'
-    this.body = template
+    this.body = template.replace('{{src}}', lastSnapshot
+      ? 'data:image/jpeg;base64,' + lastSnapshot
+      : ''
+    )
   }
 })
 
