@@ -11,14 +11,19 @@ You need node v0.11.4+ for generator support.
 ```bash
 # Install imagesnap
 brew install imagesnap
+
 # Use node 0.11.x
 nvm use 0.11
+
 # Install deps
 npm install
+
 # Set the port
 export PORT=3000
+
 # Set the snapshot interval in seconds
 export SNAPSHOT_INTERVAL=5
+
 # Start the server
 node --harmony-generators index.js
 ```
