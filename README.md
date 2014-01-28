@@ -9,8 +9,8 @@ Use case: you have a baby and a Mac dedicated to him/her (because you have dispo
 You need node v0.11.4+ for generator support.
 
 ```bash
-# Install imagesnap
-brew install imagesnap
+# Install imagemagick and imagesnap
+brew install imagemagick imagesnap
 
 # Use node 0.11.x
 nvm use 0.11
